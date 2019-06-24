@@ -1,0 +1,17 @@
+velma torso_0_joint 0
+velma head_pan_joint 0
+velma head_tilt_joint 0
+velma left_arm_0_joint 0.3
+velma left_arm_1_joint 1.8
+velma left_arm_2_joint -1.25
+velma left_arm_3_joint -0.85
+velma left_arm_4_joint 0
+velma left_arm_5_joint 0.5
+velma left_arm_6_joint 0
+velma right_arm_0_joint -0.3
+velma right_arm_1_joint -1.8
+velma right_arm_2_joint 1.25
+velma right_arm_3_joint 0.85
+velma right_arm_4_joint 0
+velma right_arm_5_joint -0.5
+velma right_arm_6_joint 0
