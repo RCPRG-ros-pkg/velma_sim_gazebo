@@ -1,7 +1,0 @@
-<library path="lib/libvelma_ros_plugin">
-  <class type="velma_planner::VelmaInterface" base_class_type="rcprg_planner::RobotInterface">
-  <description>
-  This is a plugin
-  </description>
-  </class>
-</library>
