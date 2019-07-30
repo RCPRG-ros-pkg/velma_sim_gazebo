@@ -144,9 +144,9 @@ using namespace RTT;
             init_q_vec.push_back(init_joint_map[joints_[i]->GetName()]);
 
             // keep the initial position as it is
-            init_q_vec_.push_back(joints_[i]->Position(0));
+            //init_q_vec_.push_back(joints_[i]->Position(0));
         }
-//        setInitialPosition(init_q_vec);
+        setInitialPosition(init_q_vec);
         
 
         link_names_.resize(7);
