@@ -33,8 +33,8 @@
     <component name="RightHandTactile" running="true" />
     <component name="gazebo" running="true" />
 
-    <component name="can_queue_tx_r" type="CanQueueTxComponent10" running="true" />
-    <component name="can_queue_tx_l" type="CanQueueTxComponent10" running="true" />
+    <component name="can_queue_tx_r" type="CanQueueTxComponent" running="true" />
+    <component name="can_queue_tx_l" type="CanQueueTxComponent" running="true" />
 
     <io_buffer alias="rLwr_st" name="rLwr_st" />
     <io_buffer alias="rLwr_cmd" name="rLwr_cmd" />
