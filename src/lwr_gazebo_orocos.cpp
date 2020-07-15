@@ -28,6 +28,8 @@
 #include "lwr_gazebo.h"
 #include <rtt/Logger.hpp>
 
+#include <lwr_msgs/FriIntfState.h>
+
 using namespace RTT;
 
     void LWRGazebo::updateHook() {
@@ -49,7 +51,7 @@ using namespace RTT;
         port_JointVelocity_out_.write(JointVelocity_out_);
 
         if (port_KRL_CMD_in_.read(KRL_CMD_in_) == RTT::NewData) {
-            if (1 == KRL_CMD_in_.data) {
+            if (KRL_CMD_in_.data == lwr_msgs::FriIntfState::FRI_STATE_CMD) {
                 if (!command_mode_) {
                     command_mode_ = true;
                     Logger::log() << Logger::Info <<  "switched to command mode" << Logger::endl;
@@ -58,7 +60,7 @@ using namespace RTT;
                     Logger::log() << Logger::Warning <<  "tried to switch to command mode while in command mode" << Logger::endl;
                 }
             }
-            else if (2 == KRL_CMD_in_.data) {
+            else if (KRL_CMD_in_.data == lwr_msgs::FriIntfState::FRI_STATE_MON) {
                 if (command_mode_) {
                     command_mode_ = false;
                     Logger::log() << Logger::Info << "switched to monitor mode" << Logger::endl;
