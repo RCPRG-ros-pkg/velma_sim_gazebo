@@ -23,6 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
     velma_common_components
     barrett_hand_hw_sim
     lwr_msgs
+    simulation_control_msgs
 )
 
 find_package(OROCOS-RTT REQUIRED COMPONENTS rtt-scripting rtt-transport-corba)
