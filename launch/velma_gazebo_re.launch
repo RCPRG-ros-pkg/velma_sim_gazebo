@@ -160,11 +160,11 @@
       RightFtSensor:
         joint_name: rightFtSensorJoint
         transform_xyz: [0, 0, 0]
-        transform_rpy: [0, 0, 0]
+        transform_rpy: [-1.570796327, 0.5235987756, -1.570796327] <!-- rotations from wrist to sensor frame (trasform coordinates from sensor to wrist frame)-->     
       LeftFtSensor:
         joint_name: leftFtSensorJoint
         transform_xyz: [0, 0, 0]
-        transform_rpy: [0, 0, 0]
+        transform_rpy: [-1.570796327, 0.5235987756, 1.570796327] <!-- rotations from wrist to sensor frame -->        
       can_queue_tx_r:
         invert_rx_tx: true
       can_queue_tx_l:
