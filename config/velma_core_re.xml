@@ -20,9 +20,6 @@
     <import package="rtt_simulation_control_msgs" />
     <import package="simulation_control_action" />
 
-
-    <component type="SimulationControlActionServer" name="simControl" running="true" ros_action="/velma_sim_gazebo/sim_control" />
-
     <component name="TorsoSim" running="true" />
     <component name="LWRrSim" running="true" />
     <component name="LWRlSim" running="true" />
