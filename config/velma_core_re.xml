@@ -18,7 +18,6 @@
     <import package="velma_common_components" />
     <import package="rtt_barrett_hand_msgs" />
     <import package="rtt_simulation_control_msgs" />
-    <import package="simulation_control_action" />
 
     <component name="TorsoSim" running="true" />
     <component name="LWRrSim" running="true" />
