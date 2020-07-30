@@ -66,6 +66,7 @@
       <plugin_depend>rtt_barrett_hand_subsystem_buffers</plugin_depend>
       <plugin_depend>rtt_barrett_hand_msgs</plugin_depend>
       <plugin_depend>rtt_barrett_hand_status_msgs</plugin_depend>
+      <plugin_depend>rtt_simulation_control_msgs</plugin_depend>
     </rtt_ros>
   </export>
 </package>
