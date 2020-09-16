@@ -101,6 +101,10 @@ target_link_libraries(velma_sim_gazebo
 #  ${FCL_LIBRARY}
 )
 
+add_library(base_imu src/base_imu.cpp)
+add_dependencies(base_imu ${catkin_EXPORTED_TARGETS})
+target_link_libraries(base_imu ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES})
+
 orocos_generate_package()
 
 # Install targets
