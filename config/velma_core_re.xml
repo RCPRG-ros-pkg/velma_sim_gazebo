@@ -42,6 +42,8 @@
         <service name="can_queue" />
     </component>
     <component name="LeftHandOptoforce" running="true" />
+    <component name="RightHandOptoforce" running="true" />
+    <component name="LeftHandTactile" running="true" />
     <component name="RightHandTactile" running="true" />
 
     <component name="can_queue_tx_r" type="CanQueueTxComponent" running="true" />

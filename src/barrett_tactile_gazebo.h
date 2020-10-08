@@ -92,6 +92,8 @@ public:
 
     //! Synchronization
     RTT::os::MutexRecursive gazebo_mutex_;
+
+    bool has_optoforce_;
 };
 
 #endif  // BARRETT_TACTILE_GAZEBO_H__

@@ -42,6 +42,7 @@ using namespace RTT;
         , port_tactile_out_("BHPressureState_OUTPORT", false)
         , port_tactile_info_out_("tactile_info_OUTPORT", false)
         , port_max_pressure_out_("max_measured_pressure_OUTPORT", false)
+        , has_optoforce_(false)
     {
         // Add required gazebo interfaces
         this->provides("gazebo")->addOperation("configure",&BarrettTactileGazebo::gazeboConfigureHook,this,RTT::ClientThread);
@@ -104,14 +105,24 @@ using namespace RTT;
             return false;
         }
 
-        std::string collision_names[4] = {prefix_ + std::string("_HandFingerOneKnuckleThreeLink_collision"),
+        std::string collision_names[4] = {
+            prefix_ + std::string("_HandFingerOneKnuckleThreeLink_collision"),
             prefix_ + std::string("_HandFingerTwoKnuckleThreeLink_collision"),
             prefix_ + std::string("_HandFingerThreeKnuckleThreeLink_collision"),
             prefix_ + std::string("_arm_7_link_lump::") + prefix_ + std::string("_HandPalmLink_collision_1") };
 
+        const std::string optoforce_link_name_example = prefix_ +
+                                        std::string("_HandFingerOneKnuckleThreeOptoforceSensor");
         for (int i = 0; i < 4; i++) {
-            for (gazebo::physics::Link_V::const_iterator it = model_->GetLinks().begin(); it != model_->GetLinks().end(); it++) {
+            for (gazebo::physics::Link_V::const_iterator it = model_->GetLinks().begin();
+                                                            it != model_->GetLinks().end(); it++) {
+
                 const std::string &link_name = (*it)->GetName();
+
+                if ( link_name == (optoforce_link_name_example) ) {
+                    has_optoforce_ = true;
+                }
+
                 int col_count = (*it)->GetCollisions().size();
                 bool found = false;
                 for (int cidx = 0; cidx < col_count; cidx++) {
@@ -135,6 +146,10 @@ using namespace RTT;
         // Synchronize with gazeboUpdate()
         RTT::os::MutexLock lock(gazebo_mutex_);
         
+        if (has_optoforce_) {
+            // nothing to do - there are no tactile sensors (except palm)
+            return;
+        }
         // TODO
         port_max_pressure_out_.write(max_pressure_out_);
         port_tactile_out_.write(tactile_out_);
@@ -162,6 +177,10 @@ using namespace RTT;
 // Update the controller
 void BarrettTactileGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
 {
+    if (has_optoforce_) {
+        // nothing to do - there are no tactile sensors (except palm)
+        return;
+    }
     // TODO
     if (link_names_.size() != 4) {
         return;

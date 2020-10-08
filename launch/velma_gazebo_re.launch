@@ -74,7 +74,9 @@
         mobile_base:=$(arg mobile_base)
         xml_file_re_body:='$(find velma_sim_gazebo)/config/velma_core_re.xml'
         use_gazebo_kinect:=$(arg use_kinect)
-        use_stereo_pair:=$(arg use_stereo_pair)"
+        use_stereo_pair:=$(arg use_stereo_pair)
+        use_left_optoforces:=false
+        use_right_optoforces:=false"
     />
     <param
       name="/robot_semantic_description"
@@ -160,12 +162,18 @@
         prefix: left
         disable_component: false
         can_id_base: 11
+      LeftHandTactile:
+        prefix: left
       RightHandTactile:
         prefix: right
       LeftHandOptoforce:
         device_name: gazebo_leftHand
         n_sensors: 3
         frame_id_vec: [left_HandFingerOneKnuckleThreeOptoforceBase, left_HandFingerTwoKnuckleThreeOptoforceBase, left_HandFingerThreeKnuckleThreeOptoforceBase]
+      RightHandOptoforce:
+        device_name: gazebo_rightHand
+        n_sensors: 3
+        frame_id_vec: [right_HandFingerOneKnuckleThreeOptoforceBase, right_HandFingerTwoKnuckleThreeOptoforceBase, right_HandFingerThreeKnuckleThreeOptoforceBase]
       RightFtSensor:
         joint_name: rightFtSensorJoint
         transform_xyz: [0, 0, 0]
