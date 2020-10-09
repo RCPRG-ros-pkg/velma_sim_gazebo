@@ -119,7 +119,7 @@ using namespace RTT;
 
                 const std::string &link_name = (*it)->GetName();
 
-                if ( link_name == (optoforce_link_name_example) ) {
+                if ( link_name == optoforce_link_name_example ) {
                     has_optoforce_ = true;
                 }
 

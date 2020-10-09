@@ -96,9 +96,7 @@ using namespace RTT;
             for (int i=0; i < n_joints; i++) {
                 gazebo::physics::JointPtr jnt = model_->GetJoint(joint_names[i]);
                 if (jnt.get() == NULL) {
-                    std::cout << "OptoforceGazebo::configureHook: could not find the joint " <<
-                                joint_names[i] << std::endl;
-                        has_optoforce_ = false;
+                    has_optoforce_ = false;
                     return true;
                 }
                 joints_.push_back( jnt );
