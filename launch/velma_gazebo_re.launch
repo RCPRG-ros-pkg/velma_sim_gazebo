@@ -158,10 +158,52 @@
         prefix: right
         disable_component: false
         can_id_base: 11
+        sp_kp: 80
+        sp_ki: 20
+        sp_kd: 0
+        sp_min_i: -10
+        sp_max_i: 10
+        sp_min_cmd: -80
+        sp_max_cmd: 80
+        k2_kp: 40
+        k2_ki: 10
+        k2_kd: 0
+        k2_min_i: -5
+        k2_max_i: 5
+        k2_min_cmd: -40
+        k2_max_cmd: 40
+        k3_kp: 20
+        k3_ki: 5
+        k3_kd: 0
+        k3_min_i: -2.5
+        k3_max_i: 2.5
+        k3_min_cmd: -20
+        k3_max_cmd: 20
       LeftHand:
         prefix: left
         disable_component: false
         can_id_base: 11
+        sp_kp: 80
+        sp_ki: 20
+        sp_kd: 0
+        sp_min_i: -10
+        sp_max_i: 10
+        sp_min_cmd: -80
+        sp_max_cmd: 80
+        k2_kp: 40
+        k2_ki: 10
+        k2_kd: 0
+        k2_min_i: -5
+        k2_max_i: 5
+        k2_min_cmd: -40
+        k2_max_cmd: 40
+        k3_kp: 20
+        k3_ki: 5
+        k3_kd: 0
+        k3_min_i: -2.5
+        k3_max_i: 2.5
+        k3_min_cmd: -20
+        k3_max_cmd: 20
       LeftHandTactile:
         prefix: left
       RightHandTactile:
