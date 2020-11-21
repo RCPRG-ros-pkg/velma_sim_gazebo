@@ -46,6 +46,7 @@ import std_srvs.srv
 
 from gazebo_msgs.msg import *
 from gazebo_msgs.srv import *
+from simulation_control_msgs.srv import EnableSim
 
 if __name__ == '__main__':
     rospy.init_node('unpause_on_init')
@@ -58,11 +59,14 @@ if __name__ == '__main__':
         exit(1)
 
     state_snapshot = rospy.get_param('~state_snapshot', None)
-    #state_snapshot = 'state_snapshot.txt'
+    run_steps = rospy.get_param('~run_steps', None)
+    if run_steps is None:
+        print('Parameter "run_steps" is not specified. Default is -1.')
+        run_steps = -1
 
     print "Waiting for service /gazebo/enable_sim"
     rospy.wait_for_service('/gazebo/enable_sim')
-    srv_unpause_physics = rospy.ServiceProxy('/gazebo/enable_sim', std_srvs.srv.Empty)
+    srv_unpause_physics = rospy.ServiceProxy('/gazebo/enable_sim', EnableSim)
 
     print "Waiting for service /velma_sim_gazebo/getSubsystemInfo"
     rospy.wait_for_service('/velma_sim_gazebo/getSubsystemInfo')
@@ -105,6 +109,5 @@ if __name__ == '__main__':
             result = set_model_configuration(model_name, '', models_map[model_name][0], models_map[model_name][1])
             print '  success: "' + str(result.success) + '", status message: "' + result.status_message + '"'
 
-    srv_unpause_physics()
-    print "unpaused gazebo"
-
+    srv_unpause_physics(run_steps, False)
+    print('Unpaused gazebo for {} steps'.format(run_steps))

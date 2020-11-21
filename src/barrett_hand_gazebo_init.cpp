@@ -38,10 +38,53 @@
         , disable_component_(false)
         , can_id_base_(-1)
         , first_step_(true)
+        , sp_kp_(80)
+        , sp_ki_(20)
+        , sp_kd_(0)
+        , sp_min_i_(-10)
+        , sp_max_i_(10)
+        , sp_min_cmd_(-80)
+        , sp_max_cmd_(80)
+        , k2_kp_(40)
+        , k2_ki_(10)
+        , k2_kd_(0)
+        , k2_min_i_(-5)
+        , k2_max_i_(5)
+        , k2_min_cmd_(-40)
+        , k2_max_cmd_(40)
+        , k3_kp_(20)
+        , k3_ki_(5)
+        , k3_kd_(0)
+        , k3_min_i_(-2.5)
+        , k3_max_i_(2.5)
+        , k3_min_cmd_(-20)
+        , k3_max_cmd_(20)
     {
         addProperty("prefix", prefix_);
         addProperty("disable_component", disable_component_);
         addProperty("can_id_base", can_id_base_);
+
+        addProperty("sp_kp", sp_kp_);
+        addProperty("sp_ki", sp_ki_);
+        addProperty("sp_kd", sp_kd_);
+        addProperty("sp_min_i", sp_min_i_);
+        addProperty("sp_max_i", sp_max_i_);
+        addProperty("sp_min_cmd", sp_min_cmd_);
+        addProperty("sp_max_cmd", sp_max_cmd_);
+        addProperty("k2_kp", k2_kp_);
+        addProperty("k2_ki", k2_ki_);
+        addProperty("k2_kd", k2_kd_);
+        addProperty("k2_min_i", k2_min_i_);
+        addProperty("k2_max_i", k2_max_i_);
+        addProperty("k2_min_cmd", k2_min_cmd_);
+        addProperty("k2_max_cmd", k2_max_cmd_);
+        addProperty("k3_kp", k3_kp_);
+        addProperty("k3_ki", k3_ki_);
+        addProperty("k3_kd", k3_kd_);
+        addProperty("k3_min_i", k3_min_i_);
+        addProperty("k3_max_i", k3_max_i_);
+        addProperty("k3_min_cmd", k3_min_cmd_);
+        addProperty("k3_max_cmd", k3_max_cmd_);
 
         // Add required gazebo interfaces
         this->provides("gazebo")->addOperation("configure",&BarrettHandGazebo::gazeboConfigureHook,this,RTT::ClientThread);

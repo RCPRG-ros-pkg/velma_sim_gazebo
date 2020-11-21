@@ -28,6 +28,8 @@
   <build_depend>common_interfaces</build_depend>
   <build_depend>velma_common_components</build_depend>
   <build_depend>barrett_hand_hw_sim</build_depend>
+  <build_depend>simulation_control_msgs</build_depend>
+
 
   <run_depend>barrett_hand_msgs</run_depend>
   <run_depend>barrett_hand_status_msgs</run_depend>
@@ -50,6 +52,7 @@
   <run_depend>common_interfaces</run_depend>
   <run_depend>velma_common_components</run_depend>
   <run_depend>barrett_hand_hw_sim</run_depend>
+  <run_depend>simulation_control_msgs</run_depend>
 
   <export>
     <rtt_ros>
@@ -63,6 +66,7 @@
       <plugin_depend>rtt_barrett_hand_subsystem_buffers</plugin_depend>
       <plugin_depend>rtt_barrett_hand_msgs</plugin_depend>
       <plugin_depend>rtt_barrett_hand_status_msgs</plugin_depend>
+      <plugin_depend>rtt_simulation_control_msgs</plugin_depend>
     </rtt_ros>
   </export>
 </package>

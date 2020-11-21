@@ -22,6 +22,8 @@ find_package(catkin REQUIRED COMPONENTS
     shm_comm
     velma_common_components
     barrett_hand_hw_sim
+    lwr_msgs
+    simulation_control_msgs
 )
 
 find_package(OROCOS-RTT REQUIRED COMPONENTS rtt-scripting rtt-transport-corba)
@@ -98,6 +100,10 @@ target_link_libraries(velma_sim_gazebo
 #  ${DARTCore_LIBRARIES}
 #  ${FCL_LIBRARY}
 )
+
+add_library(base_imu src/base_imu.cpp)
+add_dependencies(base_imu ${catkin_EXPORTED_TARGETS})
+target_link_libraries(base_imu ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES})
 
 orocos_generate_package()
 

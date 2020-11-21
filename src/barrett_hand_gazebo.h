@@ -81,6 +81,27 @@ public:
     // parameters
     std::string prefix_;
     int can_id_base_;
+    double sp_kp_;
+    double sp_ki_;
+    double sp_kd_;
+    double sp_min_i_;
+    double sp_max_i_;
+    double sp_min_cmd_;
+    double sp_max_cmd_;
+    double k2_kp_;
+    double k2_ki_;
+    double k2_kd_;
+    double k2_min_i_;
+    double k2_max_i_;
+    double k2_min_cmd_;
+    double k2_max_cmd_;
+    double k3_kp_;
+    double k3_ki_;
+    double k3_kd_;
+    double k3_min_i_;
+    double k3_max_i_;
+    double k3_min_cmd_;
+    double k3_max_cmd_;
 
     gazebo::physics::ModelPtr model_;
     bool data_valid_;

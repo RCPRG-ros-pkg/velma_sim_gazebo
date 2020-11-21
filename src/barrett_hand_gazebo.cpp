@@ -92,7 +92,7 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
             jc_->AddJoint(joints_[i]);
         }
 
-        double torque = 1.0;
+        //double torque = 40.0;
 
 /*
         jc_->SetPositionPID(joints_[0]->GetScopedName(), gazebo::common::PID(torque*2.0, torque*0.5, 0.0, torque*0.2, torque*(-0.2), torque*2.0,torque*(-2.0)));
@@ -104,14 +104,28 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
         jc_->SetPositionPID(joints_[5]->GetScopedName(), gazebo::common::PID(torque*0.5, torque*0.1, 0.0, torque*0.04, torque*(-0.04), torque*0.7,torque*(-0.7)));
         jc_->SetPositionPID(joints_[7]->GetScopedName(), gazebo::common::PID(torque*0.5, torque*0.1, 0.0, torque*0.04, torque*(-0.04), torque*0.7,torque*(-0.7)));
 */
-        jc_->SetPositionPID(joints_[0]->GetScopedName(), gazebo::common::PID(torque*2.0, 0, 0.0, torque*0.2, torque*(-0.2), torque*2.0,torque*(-2.0)));
-        jc_->SetPositionPID(joints_[3]->GetScopedName(), gazebo::common::PID(torque*2.0, 0*0.5, 0.0, torque*0.2, torque*(-0.2), torque*2.0,torque*(-2.0)));
-        jc_->SetPositionPID(joints_[1]->GetScopedName(), gazebo::common::PID(torque*1.1, 0*0.2, 0.0, torque*0.1, torque*(-0.1), torque*1.0,torque*(-1.0)));
-        jc_->SetPositionPID(joints_[4]->GetScopedName(), gazebo::common::PID(torque*1.1, 0*0.2, 0.0, torque*0.1, torque*(-0.1), torque*1.0,torque*(-1.0)));
-        jc_->SetPositionPID(joints_[6]->GetScopedName(), gazebo::common::PID(torque*1.1, 0*0.2, 0.0, torque*0.1, torque*(-0.1), torque*1.0,torque*(-1.0)));
-        jc_->SetPositionPID(joints_[2]->GetScopedName(), gazebo::common::PID(torque*0.5, 0*0.1, 0.0, torque*0.04, torque*(-0.04), torque*0.7,torque*(-0.7)));
-        jc_->SetPositionPID(joints_[5]->GetScopedName(), gazebo::common::PID(torque*0.5, 0*0.1, 0.0, torque*0.04, torque*(-0.04), torque*0.7,torque*(-0.7)));
-        jc_->SetPositionPID(joints_[7]->GetScopedName(), gazebo::common::PID(torque*0.5, 0*0.1, 0.0, torque*0.04, torque*(-0.04), torque*0.7,torque*(-0.7)));
+
+        // KnuckleOne (spread)
+        jc_->SetPositionPID(joints_[0]->GetScopedName(), gazebo::common::PID(
+            sp_kp_, sp_ki_, sp_kd_, sp_max_i_, sp_min_i_, sp_max_cmd_, sp_min_cmd_));
+        jc_->SetPositionPID(joints_[3]->GetScopedName(), gazebo::common::PID(
+            sp_kp_, sp_ki_, sp_kd_, sp_max_i_, sp_min_i_, sp_max_cmd_, sp_min_cmd_));
+
+        // KnuckleTwo (proximal joint)
+        jc_->SetPositionPID(joints_[1]->GetScopedName(), gazebo::common::PID(
+            k2_kp_, k2_ki_, k2_kd_, k2_max_i_, k2_min_i_, k2_max_cmd_, k2_min_cmd_));
+        jc_->SetPositionPID(joints_[4]->GetScopedName(), gazebo::common::PID(
+            k2_kp_, k2_ki_, k2_kd_, k2_max_i_, k2_min_i_, k2_max_cmd_, k2_min_cmd_));
+        jc_->SetPositionPID(joints_[6]->GetScopedName(), gazebo::common::PID(
+            k2_kp_, k2_ki_, k2_kd_, k2_max_i_, k2_min_i_, k2_max_cmd_, k2_min_cmd_));
+
+        // KnuckleThree (distal joint)
+        jc_->SetPositionPID(joints_[2]->GetScopedName(), gazebo::common::PID(
+            k3_kp_, k3_ki_, k3_kd_, k3_max_i_, k3_min_i_, k3_max_cmd_, k3_min_cmd_));
+        jc_->SetPositionPID(joints_[5]->GetScopedName(), gazebo::common::PID(
+            k3_kp_, k3_ki_, k3_kd_, k3_max_i_, k3_min_i_, k3_max_cmd_, k3_min_cmd_));
+        jc_->SetPositionPID(joints_[7]->GetScopedName(), gazebo::common::PID(
+            k3_kp_, k3_ki_, k3_kd_, k3_max_i_, k3_min_i_, k3_max_cmd_, k3_min_cmd_));
 
         for (int i = 0; i < 8; i++) {
             jc_->SetPositionTarget(joints_[i]->GetScopedName(), joints_[i]->Position());

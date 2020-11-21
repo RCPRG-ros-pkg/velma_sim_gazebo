@@ -71,6 +71,7 @@ public:
     RTT::os::MutexRecursive gazebo_mutex_;
 
     bool data_valid_;
+    bool has_optoforce_;
 };
 
 #endif  // OPTOFORCE_GAZEBO_H__

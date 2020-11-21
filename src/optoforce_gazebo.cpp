@@ -31,12 +31,13 @@
 
 using namespace RTT;
 
-    OptoforceGazebo::OptoforceGazebo(std::string const& name) : 
-        TaskContext(name, RTT::TaskContext::PreOperational),
-        model_(NULL),
-        n_sensors_(3),
-        data_valid_(false),
-        port_force_out_("force_OUTPORT", false)
+    OptoforceGazebo::OptoforceGazebo(std::string const& name)
+        : TaskContext(name, RTT::TaskContext::PreOperational)
+        , model_(NULL)
+        , n_sensors_(3)
+        , data_valid_(false)
+        , port_force_out_("force_OUTPORT", false)
+        , has_optoforce_(true)
     {
         // Add required gazebo interfaces
         this->provides("gazebo")->addOperation("configure",&OptoforceGazebo::gazeboConfigureHook,this,RTT::ClientThread);
@@ -58,14 +59,17 @@ using namespace RTT;
             Logger::log() << Logger::Error << "gazebo model is NULL" << Logger::endl;
             return false;
         }
-/*
+
         if (frame_id_vec_.size() != n_sensors_) {
-            std::cout << "ERROR: OptoforceGazebo::configureHook: frame_id_vec_.size() != n_sensors_   " << frame_id_vec_.size() << "!=" << n_sensors_ << std::endl;
+            std::cout << "ERROR: OptoforceGazebo::configureHook:" <<
+                        " frame_id_vec_.size() != n_sensors_   " << frame_id_vec_.size() <<
+                        "!=" << n_sensors_ << std::endl;
             return false;
         }
 
         if (n_sensors_ == 1) {
-            std::cout << "ERROR: OptoforceGazebo::configureHook: not implemented for n_sensors==1" << std::endl;
+            std::cout << "ERROR: OptoforceGazebo::configureHook:" <<
+                        " not implemented for n_sensors==1" << std::endl;
             return false;
         }
         else if (n_sensors_ == 3) {
@@ -77,20 +81,23 @@ using namespace RTT;
                 prefix = "left";
             }
             else {
-                std::cout << "ERROR: OptoforceGazebo::configureHook: wrong device_name=\"" << device_name_ << "\". Should be \"gazebo_rightHand\" or \"gazebo_leftHand\"" << std::endl;
+                std::cout << "ERROR: OptoforceGazebo::configureHook:" <<
+                    " wrong device_name=\"" << device_name_ <<
+                    "\". Should be \"gazebo_rightHand\" or \"gazebo_leftHand\"" << std::endl;
                 return false;
             }
 
             const int n_joints = 3;
-            std::string joint_names[n_joints] = { prefix + std::string("_HandFingerOneKnuckleThreeOptoforceJoint"),
+            std::string joint_names[n_joints] = {
+                prefix + std::string("_HandFingerOneKnuckleThreeOptoforceJoint"),
                 prefix + std::string("_HandFingerTwoKnuckleThreeOptoforceJoint"),
                 prefix + std::string("_HandFingerThreeKnuckleThreeOptoforceJoint") };
 
             for (int i=0; i < n_joints; i++) {
                 gazebo::physics::JointPtr jnt = model_->GetJoint(joint_names[i]);
                 if (jnt.get() == NULL) {
-                    std::cout << "ERROR: OptoforceGazebo::configureHook: could not find the joint " << joint_names[i] << std::endl;
-                    return false;
+                    has_optoforce_ = false;
+                    return true;
                 }
                 joints_.push_back( jnt );
                 jc_->AddJoint(jnt);
@@ -103,21 +110,14 @@ using namespace RTT;
             return false;
         }
 
-        port_force_out_.resize(n_sensors_);
-
-        for (size_t i = 0; i < n_sensors_; i++) {
-            char name[30];
-            snprintf(name, sizeof(name), "force_%zu_OUTPORT", i);
-            port_force_out_[i] = new RTT::OutputPort<geometry_msgs::WrenchStamped >();
-            this->ports()->addPort(name, *port_force_out_[i]);
-        }
-
-        force_out_.resize(n_sensors_);
-*/
         return true;
     }
 
     void OptoforceGazebo::updateHook() {
+        if (!has_optoforce_) {
+            // Nothing to do - there are no Optoforce sensors
+            return;
+        }
         // Synchronize with gazeboUpdate()
         RTT::os::MutexLock lock(gazebo_mutex_);
 
@@ -158,6 +158,10 @@ using namespace RTT;
 // Update the controller
 void OptoforceGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
 {
+    if (!has_optoforce_) {
+        // Nothing to do - there are no Optoforce sensors
+        return;
+    }
     RTT::os::MutexTryLock trylock(gazebo_mutex_);
     if(!trylock.isSuccessful()) {
         return;

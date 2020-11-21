@@ -88,9 +88,11 @@ bool BarrettHandGazebo::configureHook() {
 
     hw_can_.configure(this, can_id_base_);
 
-    std::string hand_joint_names[] = {"_HandFingerOneKnuckleOneJoint", "_HandFingerOneKnuckleTwoJoint", "_HandFingerOneKnuckleThreeJoint",
-        "_HandFingerTwoKnuckleOneJoint", "_HandFingerTwoKnuckleTwoJoint", "_HandFingerTwoKnuckleThreeJoint",
-        "_HandFingerThreeKnuckleTwoJoint", "_HandFingerThreeKnuckleThreeJoint" };
+    std::string hand_joint_names[] = {"_HandFingerOneKnuckleOneJoint",
+        "_HandFingerOneKnuckleTwoJoint", "_HandFingerOneKnuckleThreeJoint",
+        "_HandFingerTwoKnuckleOneJoint", "_HandFingerTwoKnuckleTwoJoint",
+        "_HandFingerTwoKnuckleThreeJoint", "_HandFingerThreeKnuckleTwoJoint",
+        "_HandFingerThreeKnuckleThreeJoint" };
 
     for (int i = 0; i < 8; i++) {
         std::string name( prefix_ + hand_joint_names[i] );
