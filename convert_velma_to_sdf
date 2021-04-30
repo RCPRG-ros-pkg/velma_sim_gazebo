@@ -1,0 +1,176 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2021, Robot Control and Pattern Recognition Group,
+# Institute of Control and Computation Engineering
+# Warsaw University of Technology
+#
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the Warsaw University of Technology nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL <COPYright HOLDER> BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# Author: Dawid Seredynski
+#
+
+import time
+import os
+import tempfile
+import subprocess
+import sys
+
+import roslib
+roslib.load_manifest('velma_sim_gazebo')
+import rospkg
+import rospy
+
+#import subsystem_msgs.srv
+#import std_srvs.srv
+
+#from gazebo_msgs.msg import *
+#from gazebo_msgs.srv import *
+#from simulation_control_msgs.srv import EnableSim
+
+if __name__ == '__main__':
+    #rospy.init_node('convert_velma_to_sdf')
+
+    rospack = rospkg.RosPack()
+
+    #for i in range(100):
+    #    try:
+    #        robot_description = rospy.get_param("/robot_description")
+    #        break
+    #    except:
+    #        pass
+    #    time.sleep(0.1)
+
+    proc = subprocess.Popen(['xacro'] + sys.argv[1:], stdout=subprocess.PIPE)
+    robot_description = proc.stdout.read()
+
+
+    package_keyword = 'package://'
+
+    current_pos = 0
+    while True:
+        pos_begin = robot_description.find(package_keyword, current_pos)
+        if pos_begin < 0:
+            break
+        #current_pos = pos + 10
+        pos_end = robot_description.find('/', pos_begin + len(package_keyword))
+        package_name = robot_description[pos_begin + len(package_keyword):pos_end]
+
+        full_path = rospack.get_path(package_name)
+
+        # Replace 'package://..'' with full path to package
+        robot_description = robot_description[0:pos_begin] + full_path + robot_description[pos_end:]
+
+    fd, path = tempfile.mkstemp(suffix='.urdf', text=True)
+
+    with os.fdopen(fd, 'w') as urdf_file:
+        urdf_file.write( robot_description )
+        urdf_file.flush()
+        proc = subprocess.Popen(['gz', 'sdf', '-p', path], stdout=subprocess.PIPE)
+        sdf = proc.stdout.read()
+
+        #ON_POSIX = 'posix' in sys.builtin_module_names
+        #self.__q = Queue()
+        #t = threading.Thread(target=self.__enqueueQutput, args=(self.proc.stdout, self.__q))
+        #t.daemon = True # thread dies with the program
+        #t.start()
+
+    result_sdf = ''
+    for line in sdf.split('\n'):
+        line_strip = line.strip()
+        result_sdf += line + '\n'
+        if line_strip.startswith('<visual name='):
+            if line_strip.find('black_box1') > 0 or line_strip.find('black_box2') > 0:
+                result_sdf += '<material><script><name>Gazebo/Black</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material>\n'
+            elif line_strip.find('white_box1') > 0 or line_strip.find('white_box2') > 0:
+                result_sdf += '<material><script><name>Gazebo/White</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material>\n'
+
+    print result_sdf
+    #rospy.set_param('/robot_description_sdf', result_sdf)
+    #robot_description = rospy.get_param("/robot_description")
+    #print robot_description
+
+    exit(0)
+
+
+    rospy.wait_for_service('/gazebo/set_model_configuration')
+    try:
+        set_model_configuration = rospy.ServiceProxy('/gazebo/set_model_configuration', SetModelConfiguration)
+    except rospy.ServiceException, e:
+        print "Service call failed: %s"%e
+        exit(1)
+
+    state_snapshot = rospy.get_param('~state_snapshot', None)
+    run_steps = rospy.get_param('~run_steps', None)
+    if run_steps is None:
+        print('Parameter "run_steps" is not specified. Default is -1.')
+        run_steps = -1
+
+    print "Waiting for service /gazebo/enable_sim"
+    rospy.wait_for_service('/gazebo/enable_sim')
+    srv_unpause_physics = rospy.ServiceProxy('/gazebo/enable_sim', EnableSim)
+
+    print "Waiting for service /velma_sim_gazebo/getSubsystemInfo"
+    rospy.wait_for_service('/velma_sim_gazebo/getSubsystemInfo')
+    srv_info_velma_sim_gazebo = rospy.ServiceProxy('/velma_sim_gazebo/getSubsystemInfo', subsystem_msgs.srv.GetSubsystemInfo)
+
+    print "Waiting for subsystem initialization"
+    while True:
+        try:
+            info_body = srv_info_velma_sim_gazebo()
+            if info_body.is_initialized:
+                break
+        except rospy.service.ServiceException as e:
+            print "unpause_on_init exception:", e
+            print "retrying..."
+        time.sleep(1)
+
+    if state_snapshot is None:
+        print 'State snapshot is not provided'
+    else:
+        print 'Restoring configuration saved in file "' + state_snapshot + '"'
+
+        models_map = {}
+        with open(state_snapshot, 'r') as f:
+            file_lines = f.readlines()
+            for line in file_lines:
+                fields = line.split()
+                if len(fields) != 3:
+                    continue
+                model_name = fields[0]
+                joint_name = fields[1]
+                position = float(fields[2])
+                if not model_name in models_map:
+                    models_map[model_name] = ([], [])
+                models_map[model_name][0].append( joint_name )
+                models_map[model_name][1].append( position )
+
+        # set desired configurations for all models
+        for model_name in models_map:
+            print 'Set configuration for model "' + model_name + '":'
+            result = set_model_configuration(model_name, '', models_map[model_name][0], models_map[model_name][1])
+            print '  success: "' + str(result.success) + '", status message: "' + result.status_message + '"'
+
+    srv_unpause_physics(run_steps, False)
+    print('Unpaused gazebo for {} steps'.format(run_steps))

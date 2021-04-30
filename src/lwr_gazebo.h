@@ -112,7 +112,6 @@ public:
     bool data_valid_;
 
     bool parseDisableCollision(std::string &link1, std::string &link2, TiXmlElement *c);
-    bool parseSRDF(const std::string &xml_string, std::vector<std::pair<std::string, std::string> > &disabled_collisions);
     void setInitialPosition(const std::vector<double > &init_q);
 
     gazebo::physics::ModelPtr model_;

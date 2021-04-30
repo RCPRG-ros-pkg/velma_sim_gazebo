@@ -29,6 +29,8 @@
   <build_depend>velma_common_components</build_depend>
   <build_depend>barrett_hand_hw_sim</build_depend>
   <build_depend>simulation_control_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  
 
 
   <run_depend>barrett_hand_msgs</run_depend>
@@ -53,6 +55,7 @@
   <run_depend>velma_common_components</run_depend>
   <run_depend>barrett_hand_hw_sim</run_depend>
   <run_depend>simulation_control_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
 
   <export>
     <rtt_ros>

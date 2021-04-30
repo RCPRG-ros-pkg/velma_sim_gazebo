@@ -40,7 +40,7 @@ bool BarrettHandGazebo::gazeboConfigureHook(gazebo::physics::ModelPtr model) {
 
     model_ = model;
 
-    jc_ = new gazebo::physics::JointController(model_);
+    //jc_ = new gazebo::physics::JointController(model_);
 
     return true;
 }
@@ -86,24 +86,18 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
         return;
     }
 
+
     if (first_step_) {
         first_step_ = false;
+
+        for (int i = 0; i < vjc_.size(); ++i) {
+            vjc_[i].setTargetPosition(joints_[i]->Position());
+        }
+
+        /*
         for (int i = 0; i < 8; i++) {
             jc_->AddJoint(joints_[i]);
         }
-
-        //double torque = 40.0;
-
-/*
-        jc_->SetPositionPID(joints_[0]->GetScopedName(), gazebo::common::PID(torque*2.0, torque*0.5, 0.0, torque*0.2, torque*(-0.2), torque*2.0,torque*(-2.0)));
-        jc_->SetPositionPID(joints_[3]->GetScopedName(), gazebo::common::PID(torque*2.0, torque*0.5, 0.0, torque*0.2, torque*(-0.2), torque*2.0,torque*(-2.0)));
-        jc_->SetPositionPID(joints_[1]->GetScopedName(), gazebo::common::PID(torque*1.1, torque*0.2, 0.0, torque*0.1, torque*(-0.1), torque*1.0,torque*(-1.0)));
-        jc_->SetPositionPID(joints_[4]->GetScopedName(), gazebo::common::PID(torque*1.1, torque*0.2, 0.0, torque*0.1, torque*(-0.1), torque*1.0,torque*(-1.0)));
-        jc_->SetPositionPID(joints_[6]->GetScopedName(), gazebo::common::PID(torque*1.1, torque*0.2, 0.0, torque*0.1, torque*(-0.1), torque*1.0,torque*(-1.0)));
-        jc_->SetPositionPID(joints_[2]->GetScopedName(), gazebo::common::PID(torque*0.5, torque*0.1, 0.0, torque*0.04, torque*(-0.04), torque*0.7,torque*(-0.7)));
-        jc_->SetPositionPID(joints_[5]->GetScopedName(), gazebo::common::PID(torque*0.5, torque*0.1, 0.0, torque*0.04, torque*(-0.04), torque*0.7,torque*(-0.7)));
-        jc_->SetPositionPID(joints_[7]->GetScopedName(), gazebo::common::PID(torque*0.5, torque*0.1, 0.0, torque*0.04, torque*(-0.04), torque*0.7,torque*(-0.7)));
-*/
 
         // KnuckleOne (spread)
         jc_->SetPositionPID(joints_[0]->GetScopedName(), gazebo::common::PID(
@@ -129,13 +123,51 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
 
         for (int i = 0; i < 8; i++) {
             jc_->SetPositionTarget(joints_[i]->GetScopedName(), joints_[i]->Position());
+        }*/
+    }
+
+    if (counter_ < 0 || counter_ > 100) {
+        counter_ = 0;
+        if (!tc_rosparam_getAll()) {
+            Logger::log() << Logger::Warning << "could not read ROS parameters" << Logger::endl;
+        }
+    }
+    ++counter_;
+
+    double pid_params[8][6] = {
+        {sp_kp_, sp_ki_, sp_min_i_, sp_max_i_, sp_min_cmd_, sp_max_cmd_},
+        {k2_kp_, k2_ki_, k2_min_i_, k2_max_i_, k2_min_cmd_, k2_max_cmd_},
+        {k3_kp_, k3_ki_, k3_min_i_, k3_max_i_, k3_min_cmd_, k3_max_cmd_},
+        {sp_kp_, sp_ki_, sp_min_i_, sp_max_i_, sp_min_cmd_, sp_max_cmd_},
+        {k2_kp_, k2_ki_, k2_min_i_, k2_max_i_, k2_min_cmd_, k2_max_cmd_},
+        {k3_kp_, k3_ki_, k3_min_i_, k3_max_i_, k3_min_cmd_, k3_max_cmd_},
+        {k2_kp_, k2_ki_, k2_min_i_, k2_max_i_, k2_min_cmd_, k2_max_cmd_},
+        {k3_kp_, k3_ki_, k3_min_i_, k3_max_i_, k3_min_cmd_, k3_max_cmd_},
+    };
+    bool changed = false;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 6; j++) {
+            if (prev_pid_params_[i][j] != pid_params[i][j]) {
+                std::cout << "PID parameter " << i << ", " << j << " has changed from "
+                            << prev_pid_params_[i][j] << " to " << pid_params[i][j] << std::endl;
+                changed = true;
+                prev_pid_params_[i][j] = pid_params[i][j];
+            }
+        }
+    }
+    if (changed) {
+        for (int i = 0; i < 8; i++) {
+            vjc_[i].setParameters( pid_params[i][0], pid_params[i][1],
+                pid_params[i][2], pid_params[i][3], pid_params[i][4], pid_params[i][5]);
         }
     }
 
+
     // calculate sim period
-    ros::Time now = rtt_rosclock::host_now();
-    double vel_mult = std::max(1.0, (now - last_update_time_).toSec()/0.001);
-    last_update_time_ = now;
+    //ros::Time now = rtt_rosclock::host_now();
+    //double vel_mult = std::max(1.0, (now - last_update_time_).toSec()/0.001);
+    //last_update_time_ = now;
+    double vel_mult = 1.0;
 
     //
     // BarrettHand
@@ -147,10 +179,15 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
         q_out_(i) = joints_[i]->Position();
     }
 
-    t_out_[0] = t_out_[3] = joints_[0]->GetForce(0)*force_factor;
-    t_out_[1] = t_out_[2] = joints_[1]->GetForce(0)*force_factor;
-    t_out_[4] = t_out_[5] = joints_[4]->GetForce(0)*force_factor;
-    t_out_[6] = t_out_[7] = joints_[6]->GetForce(0)*force_factor;
+    for (int i = 0; i < 8; ++i) {
+        //t_out_[i] = joints_[i]->GetForce(i);
+        js_out_.position[i] = joints_[i]->Position();
+        js_out_.effort[i] = joints_[i]->GetForce(0);
+    }
+    //t_out_[0] = t_out_[3] = joints_[0]->GetForce(0)*force_factor;
+    //t_out_[1] = t_out_[2] = joints_[1]->GetForce(0)*force_factor;
+    //t_out_[4] = t_out_[5] = joints_[4]->GetForce(0)*force_factor;
+    //t_out_[6] = t_out_[7] = joints_[6]->GetForce(0)*force_factor;
 
     int f1k1_dof_idx = 3;
     int f1k1_jnt_idx = 0;
@@ -185,16 +222,18 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
             }
         }
 
-        double f1k1_force = joints_[f1k1_jnt_idx]->GetForce(0);
-        double f2k1_force = joints_[f2k1_jnt_idx]->GetForce(0);
-        double spread_force = f1k1_force + f2k1_force;
+        //double f1k1_force = joints_[f1k1_jnt_idx]->GetForce(0);
+        //double f2k1_force = joints_[f2k1_jnt_idx]->GetForce(0);
+        //double spread_force = f1k1_force + f2k1_force;
+        vjc_[f1k1_jnt_idx].setTargetPosition( finger_int_[3] );
+        vjc_[f2k1_jnt_idx].setTargetPosition( finger_int_[3] );
 
-        if (!jc_->SetPositionTarget(joint_scoped_names_[f1k1_jnt_idx], finger_int_[3])) {
-            Logger::log() << Logger::Warning <<  "jc_->SetPositionTarget(" << joint_scoped_names_[f1k1_jnt_idx] << ")" << Logger::endl;
-        }
-        if (!jc_->SetPositionTarget(joint_scoped_names_[f2k1_jnt_idx], finger_int_[3])) {
-            Logger::log() << Logger::Warning <<  "jc_->SetPositionTarget(" << joint_scoped_names_[f2k1_jnt_idx] << ")" << Logger::endl;
-        }
+        //if (!jc_->SetPositionTarget(joint_scoped_names_[f1k1_jnt_idx], finger_int_[3])) {
+        //    Logger::log() << Logger::Warning <<  "jc_->SetPositionTarget(" << joint_scoped_names_[f1k1_jnt_idx] << ")" << Logger::endl;
+        //}
+        //if (!jc_->SetPositionTarget(joint_scoped_names_[f2k1_jnt_idx], finger_int_[3])) {
+        //    Logger::log() << Logger::Warning <<  "jc_->SetPositionTarget(" << joint_scoped_names_[f2k1_jnt_idx] << ")" << Logger::endl;
+        //}
     }
 
     // finger joints
@@ -235,16 +274,19 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
                 }
             }
 
-            double k2_angle = joints_[k2_jnt]->Position();
-            double k3_angle = joints_[k3_jnt]->Position();
+            //double k2_angle = joints_[k2_jnt]->Position();
+            //double k3_angle = joints_[k3_jnt]->Position();
 
             double k3_angle_dest;
             double k2_angle_dest;
             k2_angle_dest = finger_int_[fidx];
             k3_angle_dest = finger_int_[fidx]/3;
 
-            jc_->SetPositionTarget(joint_scoped_names_[k2_jnt], k2_angle_dest);
-            jc_->SetPositionTarget(joint_scoped_names_[k3_jnt], k3_angle_dest);
+            vjc_[k2_jnt].setTargetPosition( k2_angle_dest );
+            vjc_[k3_jnt].setTargetPosition( k3_angle_dest );
+
+            //jc_->SetPositionTarget(joint_scoped_names_[k2_jnt], k2_angle_dest);
+            //jc_->SetPositionTarget(joint_scoped_names_[k3_jnt], k3_angle_dest);
         }
     }
 
@@ -396,8 +438,11 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
         }
     }
 */
-    jc_->Update();
+    //jc_->Update();
 
+    for (int i = 0; i < vjc_.size(); ++i) {
+        vjc_[i].update();
+    }
     data_valid_ = true;
 }
 

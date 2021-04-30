@@ -33,32 +33,32 @@
         , too_big_force_counter_(3, 0)
         , data_valid_(false)
 //        , port_q_out_("q_OUTPORT", false)
-//        , port_t_out_("t_OUTPORT", false)
+        , port_js_out_("js_OUTPORT", false)
 //        , port_status_out_("status_OUTPORT", false)
         , disable_component_(false)
         , can_id_base_(-1)
         , first_step_(true)
-        , sp_kp_(80)
-        , sp_ki_(20)
-        , sp_kd_(0)
-        , sp_min_i_(-10)
-        , sp_max_i_(10)
-        , sp_min_cmd_(-80)
-        , sp_max_cmd_(80)
-        , k2_kp_(40)
-        , k2_ki_(10)
-        , k2_kd_(0)
-        , k2_min_i_(-5)
-        , k2_max_i_(5)
-        , k2_min_cmd_(-40)
-        , k2_max_cmd_(40)
-        , k3_kp_(20)
-        , k3_ki_(5)
-        , k3_kd_(0)
-        , k3_min_i_(-2.5)
-        , k3_max_i_(2.5)
-        , k3_min_cmd_(-20)
-        , k3_max_cmd_(20)
+        , sp_kp_(-1)
+        , sp_ki_(-1)
+        , sp_kd_(-1)
+        , sp_min_i_(-1)
+        , sp_max_i_(-1)
+        , sp_min_cmd_(-1)
+        , sp_max_cmd_(-1)
+        , k2_kp_(-1)
+        , k2_ki_(-1)
+        , k2_kd_(-1)
+        , k2_min_i_(-1)
+        , k2_max_i_(-1)
+        , k2_min_cmd_(-1)
+        , k2_max_cmd_(-1)
+        , k3_kp_(-1)
+        , k3_ki_(-1)
+        , k3_kd_(-1)
+        , k3_min_i_(-1)
+        , k3_max_i_(-1)
+        , k3_min_cmd_(-1)
+        , k3_max_cmd_(-1)
     {
         addProperty("prefix", prefix_);
         addProperty("disable_component", disable_component_);
@@ -97,7 +97,7 @@
 //        this->ports()->addPort("mp_INPORT",     port_mp_in_);
 //        this->ports()->addPort("hold_INPORT",   port_hold_in_);
 //        this->ports()->addPort(port_q_out_);
-//        this->ports()->addPort(port_t_out_);
+        this->ports()->addPort(port_js_out_);
 //        this->ports()->addPort(port_status_out_);
         //this->ports()->addPort("BHTemp",        port_temp_out_);
 //        this->ports()->addPort("max_measured_pressure_INPORT", port_max_measured_pressure_in_);
@@ -123,4 +123,3 @@
     }
 
 ORO_LIST_COMPONENT_TYPE(BarrettHandGazebo)
-

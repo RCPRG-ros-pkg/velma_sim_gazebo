@@ -68,6 +68,8 @@ void BarrettHandGazebo::updateHook() {
     hw_can_.p_[3] = q_out_(0)*35840.0/M_PI;
 
     hw_can_.processPuckMsgs();
+
+    port_js_out_.write(js_out_);
 }
 
 bool BarrettHandGazebo::startHook() {
@@ -88,24 +90,62 @@ bool BarrettHandGazebo::configureHook() {
 
     hw_can_.configure(this, can_id_base_);
 
-    std::string hand_joint_names[] = {"_HandFingerOneKnuckleOneJoint",
-        "_HandFingerOneKnuckleTwoJoint", "_HandFingerOneKnuckleThreeJoint",
-        "_HandFingerTwoKnuckleOneJoint", "_HandFingerTwoKnuckleTwoJoint",
-        "_HandFingerTwoKnuckleThreeJoint", "_HandFingerThreeKnuckleTwoJoint",
+    std::string hand_joint_names[] = {
+        "_HandFingerOneKnuckleOneJoint",
+        "_HandFingerOneKnuckleTwoJoint",
+        "_HandFingerOneKnuckleThreeJoint",
+        "_HandFingerTwoKnuckleOneJoint",
+        "_HandFingerTwoKnuckleTwoJoint",
+        "_HandFingerTwoKnuckleThreeJoint",
+        "_HandFingerThreeKnuckleTwoJoint",
         "_HandFingerThreeKnuckleThreeJoint" };
+
+    double pid_params[8][6] = {
+        {sp_kp_, sp_ki_, sp_min_i_, sp_max_i_, sp_min_cmd_, sp_max_cmd_},
+        {k2_kp_, k2_ki_, k2_min_i_, k2_max_i_, k2_min_cmd_, k2_max_cmd_},
+        {k3_kp_, k3_ki_, k3_min_i_, k3_max_i_, k3_min_cmd_, k3_max_cmd_},
+        {sp_kp_, sp_ki_, sp_min_i_, sp_max_i_, sp_min_cmd_, sp_max_cmd_},
+        {k2_kp_, k2_ki_, k2_min_i_, k2_max_i_, k2_min_cmd_, k2_max_cmd_},
+        {k3_kp_, k3_ki_, k3_min_i_, k3_max_i_, k3_min_cmd_, k3_max_cmd_},
+        {k2_kp_, k2_ki_, k2_min_i_, k2_max_i_, k2_min_cmd_, k2_max_cmd_},
+        {k3_kp_, k3_ki_, k3_min_i_, k3_max_i_, k3_min_cmd_, k3_max_cmd_},
+    };
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 6; j++) {
+            prev_pid_params_[i][j] = pid_params[i][j];
+        }
+    }
 
     for (int i = 0; i < 8; i++) {
         std::string name( prefix_ + hand_joint_names[i] );
         gazebo::physics::JointPtr joint = model_->GetJoint(name);
         joints_.push_back(joint);
-        joint_scoped_names_.push_back(joint->GetScopedName());
+        //joint_scoped_names_.push_back(joint->GetScopedName());
         joint->SetEffortLimit(0, 1);
+
+        vjc_.push_back( VelmaJointController(joint, 0.002, pid_params[i][0], pid_params[i][1],
+            pid_params[i][2], pid_params[i][3], pid_params[i][4], pid_params[i][5]) );
+
+        js_out_.name.push_back(name);
+        js_out_.position.push_back(0.0);
+        js_out_.velocity.push_back(0.0);
+        js_out_.effort.push_back(0.0);
     }
 
     for (int i = 0; i < 3; i++) {
         clutch_break_[i] = false;
     }
 
+    RTT::Service::shared_ptr tc_rosparam = this->provides("rosparam");
+
+    tc_rosparam_getAll = tc_rosparam->getOperation("getAll");
+    if (!tc_rosparam_getAll.ready()) {
+        Logger::log() << Logger::Error
+        << "could not get ROS parameter getAll operation" << Logger::endl;
+    }
+
+
+    
 
     return true;
 }

@@ -10,6 +10,7 @@
     <import package="velma_controller" />
     <import package="rtt_cartesian_trajectory_msgs" />
     <import package="rtt_std_msgs" />
+    <import package="rtt_sensor_msgs" />
     <import package="rtt_tf" />
     <import package="velma_sim_gazebo" />
     <import package="rtt_velma_ec_gen_subsystem_buffers" />
@@ -59,6 +60,9 @@
     <connection from="LeftHand.tx_OUTPORT"      to="can_queue_tx_l.tx_INPORT" >
         <conn_policy type="circular_buffer" size="10" />
     </connection>
+
+    <ros_stream port="LeftHand.js_OUTPORT"      topic="/velma_sim_gazebo/hand_left_js" />
+    <ros_stream port="RightHand.js_OUTPORT"     topic="/velma_sim_gazebo/hand_right_js" />
 
     <connection from="can_queue_tx_r.tx_queue_OUTPORT" to="ec_stConcate.CANright_Box11CANInterfaceIN_RxQueue_INPORT" />
     <connection from="can_queue_tx_l.tx_queue_OUTPORT" to="ec_stConcate.CANleft_Box10CANInterfaceIN_RxQueue_INPORT" />

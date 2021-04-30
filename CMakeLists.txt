@@ -24,6 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
     barrett_hand_hw_sim
     lwr_msgs
     simulation_control_msgs
+    sensor_msgs
 )
 
 find_package(OROCOS-RTT REQUIRED COMPONENTS rtt-scripting rtt-transport-corba)
@@ -84,6 +85,7 @@ orocos_component(velma_sim_gazebo
     src/ft_sensor_gazebo.cpp src/ft_sensor_gazebo_init.cpp src/ft_sensor_gazebo_orocos.cpp
     src/velma_sim_conversion.cpp
     src/velma_sim_library.cpp
+    src/velma_joint_controller.cpp
 )
 
 set_target_properties(velma_sim_gazebo PROPERTIES COMPILE_FLAGS -DRTT_COMPONENT)
@@ -127,7 +129,5 @@ install(DIRECTORY config/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config
   )
 
-catkin_install_python(PROGRAMS scripts/unpause_on_init
+catkin_install_python(PROGRAMS scripts/unpause_on_init convert_velma_to_sdf
 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
-

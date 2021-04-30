@@ -42,11 +42,12 @@
   <!-- start gazebo server-->
   <env
     name="GAZEBO_MODEL_PATH"
-    value="$(arg GAZEBO_MODEL_PATH):$(optenv GAZEBO_MODEL_PATH):$(find rcprg_gazebo_utils)/data/gazebo/models"
+    value="$(arg GAZEBO_MODEL_PATH):$(optenv GAZEBO_MODEL_PATH):$(find rcprg_gazebo_utils)/data/gazebo/models:"
   />
+
   <env
     name="GAZEBO_RESOURCE_PATH"
-    value="$(arg GAZEBO_RESOURCE_PATH):$(optenv GAZEBO_RESOURCE_PATH):$(find rcprg_gazebo_utils)/data/gazebo"
+    value="$(arg GAZEBO_RESOURCE_PATH):$(optenv GAZEBO_RESOURCE_PATH):$(find rcprg_gazebo_utils)/data/gazebo:"
   />
   <node
     name="gazebo"
@@ -59,6 +60,8 @@
     <env name="ORO_LOGLEVEL" value="$(arg ORO_LOGLEVEL)"/>
     <!-- <env name="LD_PRELOAD" value="librtt_malloc_hook.so" /> -->
   </node>
+
+  <!--<node name="convert_velma_to_sdf" pkg="velma_sim_gazebo" type="convert_velma_to_sdf" respawn="false" output="screen"/>-->
 
   <!-- start gazebo client -->
   <group if="$(arg gui)">
@@ -85,6 +88,20 @@
       name="/robot_semantic_description"
       command="$(find xacro)/xacro '$(find velma_description)/robots/$(arg srdf_filename)'"
     />
+    <param name="/robot_semantic_description_no_hands" command="$(find xacro)/xacro.py '$(find velma_description)/robots/velma_no_hands.srdf'" />
+    <param
+      name="/robot_description_sdf"
+      command="$(find velma_sim_gazebo)/convert_velma_to_sdf
+      '$(find velma_description)/robots/velma.urdf.xacro'
+        subsystem_xml:=true
+        mobile_base:=$(arg mobile_base)
+        xml_file_re_body:='$(find velma_sim_gazebo)/config/velma_core_re.xml'
+        use_gazebo_kinect:=$(arg use_kinect)
+        use_stereo_pair:=$(arg use_stereo_pair)
+        use_left_optoforces:=false
+        use_right_optoforces:=false
+        use_gpu:=$(arg use_gpu_ray)"
+    />
   </group>
 
   <node
@@ -94,6 +111,7 @@
     <param name="use_tf_static" value="false"/>
   </node>
 
+  <!--
   <group if="$(arg spawn_velma)">
   <node
     name="spawn_urdf"
@@ -101,6 +119,16 @@
     type="spawn_model"
     output="screen"
     args="-param robot_description -urdf -model velma -gazebo_namespace gazebo" />
+  </group>
+  -->
+
+  <group if="$(arg spawn_velma)">
+  <node
+    name="spawn_urdf"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    output="screen"
+    args="-param robot_description_sdf -sdf -model velma -gazebo_namespace gazebo" />
   </group>
 
   <node
@@ -161,52 +189,52 @@
         prefix: right
         disable_component: false
         can_id_base: 11
-        sp_kp: 80
+        sp_kp: 100
         sp_ki: 20
         sp_kd: 0
-        sp_min_i: -10
-        sp_max_i: 10
-        sp_min_cmd: -80
-        sp_max_cmd: 80
-        k2_kp: 40
-        k2_ki: 10
+        sp_min_i: -0.05
+        sp_max_i: 0.05
+        sp_min_cmd: -0.5
+        sp_max_cmd: 0.5
+        k2_kp: 100
+        k2_ki: 20
         k2_kd: 0
-        k2_min_i: -5
-        k2_max_i: 5
-        k2_min_cmd: -40
-        k2_max_cmd: 40
-        k3_kp: 20
-        k3_ki: 5
+        k2_min_i: -0.025
+        k2_max_i: 0.025
+        k2_min_cmd: -0.5
+        k2_max_cmd: 0.5
+        k3_kp: 100
+        k3_ki: 20
         k3_kd: 0
-        k3_min_i: -2.5
-        k3_max_i: 2.5
-        k3_min_cmd: -20
-        k3_max_cmd: 20
+        k3_min_i: -0.025
+        k3_max_i: 0.025
+        k3_min_cmd: -0.5
+        k3_max_cmd: 0.5
       LeftHand:
         prefix: left
         disable_component: false
         can_id_base: 11
-        sp_kp: 80
+        sp_kp: 100
         sp_ki: 20
         sp_kd: 0
-        sp_min_i: -10
-        sp_max_i: 10
-        sp_min_cmd: -80
-        sp_max_cmd: 80
-        k2_kp: 40
-        k2_ki: 10
+        sp_min_i: -0.05
+        sp_max_i: 0.05
+        sp_min_cmd: -0.5
+        sp_max_cmd: 0.5
+        k2_kp: 100
+        k2_ki: 20
         k2_kd: 0
-        k2_min_i: -5
-        k2_max_i: 5
-        k2_min_cmd: -40
-        k2_max_cmd: 40
-        k3_kp: 20
-        k3_ki: 5
+        k2_min_i: -0.025
+        k2_max_i: 0.025
+        k2_min_cmd: -0.5
+        k2_max_cmd: 0.5
+        k3_kp: 100
+        k3_ki: 20
         k3_kd: 0
-        k3_min_i: -2.5
-        k3_max_i: 2.5
-        k3_min_cmd: -20
-        k3_max_cmd: 20
+        k3_min_i: -0.025
+        k3_max_i: 0.025
+        k3_min_cmd: -0.5
+        k3_max_cmd: 0.5
       LeftHandTactile:
         prefix: left
       RightHandTactile:

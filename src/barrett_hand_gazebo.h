@@ -43,6 +43,10 @@
 
 #include <barrett_hand_hw_sim/barrett_hand_hw_can.h>
 
+#include "velma_joint_controller.h"
+
+#include <sensor_msgs/JointState.h>
+
 class BarrettHandGazebo : public RTT::TaskContext
 {
 protected:
@@ -56,7 +60,8 @@ public:
     int32_t         hold_in_;
     Dofs max_measured_pressure_in_;
     Joints q_out_;
-    Joints t_out_;
+    //Joints t_out_;
+    sensor_msgs::JointState js_out_;
     //barrett_hand_msgs::BHTemp temp_out_;
 
     // public methods
@@ -103,6 +108,8 @@ public:
     double k3_min_cmd_;
     double k3_max_cmd_;
 
+    double prev_pid_params_[8][6];
+
     gazebo::physics::ModelPtr model_;
     bool data_valid_;
 
@@ -118,7 +125,8 @@ public:
 
     double finger_int_[4];
 
-    gazebo::physics::JointController *jc_;
+    std::vector<VelmaJointController > vjc_;
+    //gazebo::physics::JointController *jc_;
 
     //! Synchronization
     RTT::os::MutexRecursive gazebo_mutex_;
@@ -127,9 +135,15 @@ public:
 
     BarrettHandHwCAN hw_can_;
 
-    ros::Time last_update_time_;
+    //ros::Time last_update_time_;
 
     bool first_step_;
+
+    // Used for dynamic changes in PID params
+    int counter_;
+    RTT::OperationCaller < bool() > tc_rosparam_getAll;
+
+    RTT::OutputPort<sensor_msgs::JointState > port_js_out_;  // FRIx.JointTorqueCommand
 };
 
 #endif  // BARRETT_HAND_GAZEBO_H__
