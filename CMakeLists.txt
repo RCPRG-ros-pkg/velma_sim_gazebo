@@ -25,6 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
     lwr_msgs
     simulation_control_msgs
     sensor_msgs
+    fabric_logger
 )
 
 find_package(OROCOS-RTT REQUIRED COMPONENTS rtt-scripting rtt-transport-corba)

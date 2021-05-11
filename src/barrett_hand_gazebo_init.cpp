@@ -59,6 +59,7 @@
         , k3_max_i_(-1)
         , k3_min_cmd_(-1)
         , k3_max_cmd_(-1)
+        , m_fabric_logger( FabricLogger::createNewInterfaceRt( name, 10000) )
     {
         addProperty("prefix", prefix_);
         addProperty("disable_component", disable_component_);

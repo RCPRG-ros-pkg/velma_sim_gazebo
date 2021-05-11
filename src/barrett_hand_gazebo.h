@@ -47,6 +47,11 @@
 
 #include <sensor_msgs/JointState.h>
 
+#include "fabric_logger/fabric_logger.h"
+
+using fabric_logger::FabricLoggerInterfaceRtPtr;
+using fabric_logger::FabricLogger;
+
 class BarrettHandGazebo : public RTT::TaskContext
 {
 protected:
@@ -144,6 +149,8 @@ public:
     RTT::OperationCaller < bool() > tc_rosparam_getAll;
 
     RTT::OutputPort<sensor_msgs::JointState > port_js_out_;  // FRIx.JointTorqueCommand
+
+    FabricLoggerInterfaceRtPtr m_fabric_logger;
 };
 
 #endif  // BARRETT_HAND_GAZEBO_H__
