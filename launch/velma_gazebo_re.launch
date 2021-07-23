@@ -167,56 +167,57 @@
           iyy: 0.00702498
           iyz: 0.000105634
           izz: 0.012516
+
       RightHand:
         prefix: right
         disable_component: false
         can_id_base: 11
-        sp_kp: 100
+        sp_kp: 20
         sp_ki: 20
         sp_kd: 0
-        sp_min_i: -0.05
-        sp_max_i: 0.05
-        sp_min_cmd: -0.5
-        sp_max_cmd: 0.5
-        k2_kp: 100
+        sp_min_i: -0.1
+        sp_max_i: 0.1
+        sp_min_cmd: -1.5
+        sp_max_cmd: 1.5
+        k2_kp: 20
         k2_ki: 20
         k2_kd: 0
-        k2_min_i: -0.025
-        k2_max_i: 0.025
-        k2_min_cmd: -0.5
-        k2_max_cmd: 0.5
-        k3_kp: 100
+        k2_min_i: -0.05
+        k2_max_i: 0.05
+        k2_min_cmd: -1.5
+        k2_max_cmd: 1.5
+        k3_kp: 20
         k3_ki: 20
         k3_kd: 0
-        k3_min_i: -0.025
-        k3_max_i: 0.025
-        k3_min_cmd: -0.5
-        k3_max_cmd: 0.5
+        k3_min_i: -0.05
+        k3_max_i: 0.05
+        k3_min_cmd: -1.5
+        k3_max_cmd: 1.5
       LeftHand:
         prefix: left
         disable_component: false
         can_id_base: 11
-        sp_kp: 100
+        sp_kp: 20
         sp_ki: 20
         sp_kd: 0
-        sp_min_i: -0.05
-        sp_max_i: 0.05
-        sp_min_cmd: -0.5
-        sp_max_cmd: 0.5
-        k2_kp: 100
+        sp_min_i: -0.1
+        sp_max_i: 0.1
+        sp_min_cmd: -1.5
+        sp_max_cmd: 1.5
+        k2_kp: 20
         k2_ki: 20
         k2_kd: 0
-        k2_min_i: -0.025
-        k2_max_i: 0.025
-        k2_min_cmd: -0.5
-        k2_max_cmd: 0.5
-        k3_kp: 100
+        k2_min_i: -0.05
+        k2_max_i: 0.05
+        k2_min_cmd: -1.5
+        k2_max_cmd: 1.5
+        k3_kp: 20
         k3_ki: 20
         k3_kd: 0
-        k3_min_i: -0.025
-        k3_max_i: 0.025
-        k3_min_cmd: -0.5
-        k3_max_cmd: 0.5
+        k3_min_i: -0.05
+        k3_max_i: 0.05
+        k3_min_cmd: -1.5
+        k3_max_cmd: 1.5
       LeftHandTactile:
         prefix: left
       RightHandTactile:

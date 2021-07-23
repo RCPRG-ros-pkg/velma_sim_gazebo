@@ -440,9 +440,12 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
 */
     //jc_->Update();
 
+    //std::cout << getName() << ": ";
     for (int i = 0; i < vjc_.size(); ++i) {
         vjc_[i].update();
+        //std::cout << vjc_[i].getLastCommand() << ", ";
     }
+    //std::cout << std::endl;
     data_valid_ = true;
 }
 
