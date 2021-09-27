@@ -170,6 +170,20 @@ bool TorsoGazebo::startHook() {
 }
 
 bool TorsoGazebo::configureHook() {
+
+    {
+        gazebo::physics::JointPtr joint = model_->GetJoint("head_pan_joint");
+        vjc_.push_back( VelmaJointController(joint, 0.002, hp_kp_, hp_ki_,
+            hp_min_i_, hp_max_i_, hp_min_cmd_, hp_max_cmd_) );
+    }
+
+    {
+        gazebo::physics::JointPtr joint = model_->GetJoint("head_tilt_joint");
+        vjc_.push_back( VelmaJointController(joint, 0.002, ht_kp_, ht_ki_,
+            ht_min_i_, ht_max_i_, ht_min_cmd_, ht_max_cmd_) );
+    }
+
+
     return true;
 }
 

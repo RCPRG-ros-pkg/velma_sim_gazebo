@@ -78,6 +78,23 @@ TorsoGazebo::TorsoGazebo(std::string const& name)
     this->ports()->addPort(port_ht_v_out_);
     this->ports()->addPort("head_tilt_motor_status_OUTPORT", port_ht_status_out_);
     ht_q_in_ = ht_v_in_ = ht_c_in_ = ht_q_out_ = ht_v_out_ = 0.0;
+
+    addProperty("hp_kp", hp_kp_);
+    addProperty("hp_ki", hp_ki_);
+    addProperty("hp_kd", hp_kd_);
+    addProperty("hp_min_i", hp_min_i_);
+    addProperty("hp_max_i", hp_max_i_);
+    addProperty("hp_min_cmd", hp_min_cmd_);
+    addProperty("hp_max_cmd", hp_max_cmd_);
+
+    addProperty("ht_kp", ht_kp_);
+    addProperty("ht_ki", ht_ki_);
+    addProperty("ht_kd", ht_kd_);
+    addProperty("ht_min_i", ht_min_i_);
+    addProperty("ht_max_i", ht_max_i_);
+    addProperty("ht_min_cmd", ht_min_cmd_);
+    addProperty("ht_max_cmd", ht_max_cmd_);
+
 }
 
 TorsoGazebo::~TorsoGazebo() {

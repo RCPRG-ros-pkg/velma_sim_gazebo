@@ -60,7 +60,7 @@ bool TorsoGazebo::gazeboConfigureHook(gazebo::physics::ModelPtr model) {
 
     model_ = model;
 
-    jc_ = new gazebo::physics::JointController(model);
+    //jc_ = new gazebo::physics::JointController(model);
 
     torso_joint_ = model->GetJoint("torso_0_joint");
 
@@ -68,22 +68,22 @@ bool TorsoGazebo::gazeboConfigureHook(gazebo::physics::ModelPtr model) {
     head_pan_joint_ = model->GetJoint("head_pan_joint");
     head_tilt_joint_ = model->GetJoint("head_tilt_joint");
 
-    head_pan_scoped_name_ = head_pan_joint_->GetScopedName();
-    head_tilt_scoped_name_ = head_tilt_joint_->GetScopedName();
+    //head_pan_scoped_name_ = head_pan_joint_->GetScopedName();
+    //head_tilt_scoped_name_ = head_tilt_joint_->GetScopedName();
 
     return true;
 }
 
 void TorsoGazebo::setJointsPID() {
-    jc_->Reset();
+    //jc_->Reset();
 
-    jc_->AddJoint(head_pan_joint_);
-    jc_->SetPositionPID(head_pan_scoped_name_, gazebo::common::PID(2.0, 1.0, 0.0, 0.5, -0.5, 10.0,-10.0));
-    jc_->SetPositionTarget(head_pan_scoped_name_, head_pan_joint_->Position());
+    //jc_->AddJoint(head_pan_joint_);
+    //jc_->SetPositionPID(head_pan_scoped_name_, gazebo::common::PID(2.0, 1.0, 0.0, 0.5, -0.5, 10.0,-10.0));
+    //jc_->SetPositionTarget(head_pan_scoped_name_, head_pan_joint_->Position());
 
-    jc_->AddJoint(head_tilt_joint_);
-    jc_->SetPositionPID(head_tilt_scoped_name_, gazebo::common::PID(2.0, 1.0, 0.0, 0.5, -0.5, 10.0,-10.0));
-    jc_->SetPositionTarget(head_tilt_scoped_name_, head_tilt_joint_->Position());
+    //jc_->AddJoint(head_tilt_joint_);
+    //jc_->SetPositionPID(head_tilt_scoped_name_, gazebo::common::PID(2.0, 1.0, 0.0, 0.5, -0.5, 10.0,-10.0));
+    //jc_->SetPositionTarget(head_tilt_scoped_name_, head_tilt_joint_->Position());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,9 @@ void TorsoGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
     Logger::In in("TorsoGazebo::gazeboUpdateHook");
 
     if (first_step_) {
-        setJointsPID();
+        vjc_[0].setTargetPosition(head_pan_joint_->Position());
+        vjc_[1].setTargetPosition(head_tilt_joint_->Position());
+        //setJointsPID();
         first_step_ = false;
     }
 
@@ -168,10 +170,12 @@ void TorsoGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
     // joint controller for the head
     if (hp_homing_in_progress_) {
         if (q_h(0) > 0.015) {
-            jc_->SetPositionTarget(head_pan_scoped_name_, q_h(0)-0.008);
+            vjc_[0].setTargetPosition( q_h(0)-0.008 );
+            //jc_->SetPositionTarget(head_pan_scoped_name_, q_h(0)-0.008);
         }
         else if (q_h(0) < -0.015) {
-            jc_->SetPositionTarget(head_pan_scoped_name_, q_h(0)+0.008);
+            vjc_[0].setTargetPosition( q_h(0)+0.008 );
+            //jc_->SetPositionTarget(head_pan_scoped_name_, q_h(0)+0.008);
         }
         else {
             hp_homing_in_progress_ = false;
@@ -179,15 +183,18 @@ void TorsoGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
         }
     }
     else if (hp_homing_done_) {
-        jc_->SetPositionTarget(head_pan_scoped_name_, -tmp_hp_q_in_ / head_trans);
+        vjc_[0].setTargetPosition( -tmp_hp_q_in_ / head_trans );
+        //jc_->SetPositionTarget(head_pan_scoped_name_, -tmp_hp_q_in_ / head_trans);
     }
 
     if (ht_homing_in_progress_) {
         if (q_h(1) > 0.015) {
-            jc_->SetPositionTarget(head_tilt_scoped_name_, q_h(1)-0.008);
+            vjc_[1].setTargetPosition( q_h(1)-0.008 );
+            //jc_->SetPositionTarget(head_tilt_scoped_name_, q_h(1)-0.008);
         }
         else if (q_h(1) < -0.015) {
-            jc_->SetPositionTarget(head_tilt_scoped_name_, q_h(1)+0.008);
+            vjc_[1].setTargetPosition( q_h(1)+0.008 );
+            //jc_->SetPositionTarget(head_tilt_scoped_name_, q_h(1)+0.008);
         }
         else {
             ht_homing_in_progress_ = false;
@@ -195,9 +202,13 @@ void TorsoGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
         }
     }
     else if (ht_homing_done_) {
-        jc_->SetPositionTarget(head_tilt_scoped_name_, tmp_ht_q_in_ / head_trans);
+        vjc_[1].setTargetPosition( tmp_ht_q_in_ / head_trans );
+        //jc_->SetPositionTarget(head_tilt_scoped_name_, tmp_ht_q_in_ / head_trans);
     }
 
-    jc_->Update();
+    for (int i = 0; i < vjc_.size(); ++i) {
+        vjc_[i].update();
+    }
+    //jc_->Update();
 }
 

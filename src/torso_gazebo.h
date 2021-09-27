@@ -39,6 +39,8 @@
 
 #include "rtt_rosclock/rtt_rosclock.h"
 
+#include "velma_joint_controller.h"
+
 #include <controller_common/elmo_servo_state.h>
 
 class TorsoGazebo : public RTT::TaskContext
@@ -136,10 +138,12 @@ public:
     gazebo::physics::JointPtr head_pan_joint_;
     gazebo::physics::JointPtr head_tilt_joint_;
 
-    std::string head_pan_scoped_name_;
-    std::string head_tilt_scoped_name_;
+    //std::string head_pan_scoped_name_;
+    //std::string head_tilt_scoped_name_;
 
-    gazebo::physics::JointController *jc_;
+    //gazebo::physics::JointController *jc_;
+
+    std::vector<VelmaJointController > vjc_;
 
     void getJointPositionAndVelocity(double &q, double &dq);
     void getHeadJointPositionAndVelocity(HeadJoints &q, HeadJoints &dq);
@@ -154,6 +158,22 @@ public:
 
     bool kinect_active_;
     bool first_step_;
+
+    double hp_kp_;
+    double hp_ki_;
+    double hp_kd_;
+    double hp_min_i_;
+    double hp_max_i_;
+    double hp_min_cmd_;
+    double hp_max_cmd_;
+
+    double ht_kp_;
+    double ht_ki_;
+    double ht_kd_;
+    double ht_min_i_;
+    double ht_max_i_;
+    double ht_min_cmd_;
+    double ht_max_cmd_;
 };
 
 #endif  // TORSO_GAZEBO_H__

@@ -242,6 +242,21 @@
         invert_rx_tx: true
       can_queue_tx_l:
         invert_rx_tx: true
+      TorsoSim:
+        hp_kp: 80
+        hp_ki: 80
+        hp_kd: 0
+        hp_min_i: -0.4
+        hp_max_i: 0.4
+        hp_min_cmd: -4.0
+        hp_max_cmd: 4.0
+        ht_kp: 80
+        ht_ki: 80
+        ht_kd: 0
+        ht_min_i: -0.4
+        ht_max_i: 0.4
+        ht_min_cmd: -4.0
+        ht_max_cmd: 4.0
     </rosparam>
   </group>
 </launch>
