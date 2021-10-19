@@ -78,7 +78,7 @@
       <arg name="use_dh_compatible_model" value="false"/>
       <arg name="use_left_optoforces" value="false"/>
       <arg name="use_right_optoforces" value="false"/>
-      <arg name="mobile_base" value="false"/>
+      <arg name="mobile_base" value="$(arg mobile_base)"/>
       <arg name="use_gpu_ray" value="true"/>
       <arg name="collision_detector" value="$(arg collision_detector)"/>
       <arg name="use_kinect" value="true"/>
