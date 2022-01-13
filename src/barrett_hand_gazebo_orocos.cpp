@@ -40,22 +40,11 @@ void BarrettHandGazebo::updateHook() {
     if (!data_valid_) {
         //Logger::In in("BarrettHandGazebo::updateHook");
         //Logger::log() << Logger::Debug << "gazebo is not initialized" << Logger::endl;
+        m_fabric_logger << "gazebo is not initialized yet" << FabricLogger::End();
         return;
     }
-    else {
-        //Logger::log() << Logger::Debug << Logger::endl;
-    }
+    // else
 
-//    if (getName() == "RightHand") {
-//            Logger::log() << Logger::Info << "a " << q_out_.transpose() << Logger::endl;
-//            Eigen::Matrix<int, 4, 1 > status_idle;
-//            for (int i=0; i<4; ++i) {
-//                status_idle(i) = status_idle_[i];
-//            }
-//            Logger::log() << Logger::Info << status_idle.transpose() << Logger::endl;
-//            Logger::log() << Logger::Info << "a " << q_out_.transpose() << Logger::endl;
-//    }
-    
     //
     // BarrettHand
     //

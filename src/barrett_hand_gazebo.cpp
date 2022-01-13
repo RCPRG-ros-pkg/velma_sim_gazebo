@@ -75,7 +75,7 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
         return;
     }
 
-    Logger::In in(std::string("BarrettHandGazebo::gazeboUpdateHook ") + getName());
+    //Logger::In in(std::string("BarrettHandGazebo::gazeboUpdateHook ") + getName());
 
     if (joints_.size() == 0) {
         return;
@@ -83,12 +83,14 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
 
     RTT::os::MutexTryLock trylock(gazebo_mutex_);
     if(!trylock.isSuccessful()) {
+        m_fabric_logger << "WARNING: gazebo_mutex trylock failed at gazeboUpdateHook" << FabricLogger::End();
         return;
     }
 
 
     if (first_step_) {
         first_step_ = false;
+        m_fabric_logger << "first step" << FabricLogger::End();
 
         for (int i = 0; i < vjc_.size(); ++i) {
             vjc_[i].setTargetPosition(joints_[i]->Position());
@@ -129,7 +131,7 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
     if (counter_ < 0 || counter_ > 100) {
         counter_ = 0;
         if (!tc_rosparam_getAll()) {
-            Logger::log() << Logger::Warning << "could not read ROS parameters" << Logger::endl;
+            m_fabric_logger << "WARNING: could not read ROS parameters" << FabricLogger::End();
         }
     }
     ++counter_;
@@ -201,7 +203,7 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
             finger_int_[i] = getFingerAngle(i);
             hw_can_.status_idle_[i] = false;
             status_overcurrent_[i] = false;
-            Logger::log() << Logger::Info <<  "move hand " << i << Logger::endl;
+            m_fabric_logger << "move hand " << i << FabricLogger::End();
         }
     }
 
@@ -211,14 +213,14 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
             finger_int_[3] -= hw_can_.v_in_[f1k1_dof_idx] * vel_mult;
             if (finger_int_[3] <= hw_can_.q_in_[f1k1_dof_idx]) {
                 hw_can_.status_idle_[3] = true;
-                Logger::log() << Logger::Info <<  "spread idle" << Logger::endl;
+                m_fabric_logger << "spread idle" << FabricLogger::End();
             }
         }
         else if (finger_int_[3] < hw_can_.q_in_[f1k1_dof_idx]) {
             finger_int_[3] += hw_can_.v_in_[f1k1_dof_idx] * vel_mult;
             if (finger_int_[3] >= hw_can_.q_in_[f1k1_dof_idx]) {
                 hw_can_.status_idle_[3] = true;
-                Logger::log() << Logger::Info <<  "spread idle" << Logger::endl;
+                m_fabric_logger << "spread idle" << FabricLogger::End();
             }
         }
 
@@ -259,7 +261,8 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
                 //}
                 if (finger_int_[fidx] <= hw_can_.q_in_[k2_dof]) {
                     hw_can_.status_idle_[fidx] = true;
-                    Logger::log() << Logger::Info << "finger " << fidx << " idle -- opening" << Logger::endl;
+                    //Logger::log() << Logger::Info << "finger " << fidx << " idle -- opening" << Logger::endl;
+                    m_fabric_logger << "finger " << fidx << " idle -- opening" << FabricLogger::End();
                 }
             }
             else {
@@ -270,7 +273,8 @@ void BarrettHandGazebo::gazeboUpdateHook(gazebo::physics::ModelPtr model)
                 //}
                 if (finger_int_[fidx] >= hw_can_.q_in_[k2_dof]) {
                     hw_can_.status_idle_[fidx] = true;
-                    Logger::log() << Logger::Info << "finger " << fidx << " idle -- closing" << Logger::endl;
+                    //Logger::log() << Logger::Info << "finger " << fidx << " idle -- closing" << Logger::endl;
+                    m_fabric_logger << "finger " << fidx << " idle -- closing" << FabricLogger::End();
                 }
             }
 
