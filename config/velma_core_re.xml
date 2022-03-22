@@ -36,12 +36,8 @@
     <component name="LWRlSim" running="true" />
     <component name="LeftFtSensor" running="true" />
     <component name="RightFtSensor" running="true" />
-    <component name="LeftHand" running="true" >
-        <service name="can_queue" />
-    </component>
-    <component name="RightHand" running="true" >
-        <service name="can_queue" />
-    </component>
+    <component name="LeftHand" running="true" />
+    <component name="RightHand" running="true" />
     <component name="LeftHandOptoforce" running="true" />
     <component name="RightHandOptoforce" running="true" />
     <component name="LeftHandTactile" running="true" />
