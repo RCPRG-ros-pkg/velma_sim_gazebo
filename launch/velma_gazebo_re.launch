@@ -172,6 +172,7 @@
         prefix: right
         disable_component: false
         can_id_base: 11
+        invert_rx_tx: true
         sp_kp: 20
         sp_ki: 20
         sp_kd: 0
@@ -197,6 +198,7 @@
         prefix: left
         disable_component: false
         can_id_base: 11
+        invert_rx_tx: true
         sp_kp: 20
         sp_ki: 20
         sp_kd: 0
