@@ -31,7 +31,7 @@
     <states initial="normal">
         <state name="normal">
             <behavior name="normal" />
-            <buffer_group name="command" min_period="0" first_timeout="0.001" next_timeout="0.001" first_timeout_sim="1.0" used_time="real" />
+            <buffer_group name="command" min_period="0" min_period_sim="0" first_timeout="0.001" next_timeout="0.001" first_timeout_sim="1.0" used_time="real" />
         </state>
     </states>
 
